@@ -1,11 +1,22 @@
 <?php
 
-use GammaLibrae\Actions\GetLicense;
-use GammaLibrae\Actions\Ping;
-
 $root = dirname(__DIR__);
 
 require_once($root . '/vendor/autoload.php');
+
+$entry = (object)[
+    'path' => $_SERVER['SCRIPT_NAME'],
+    'query' => $_GET,
+    'post' => $_POST,
+    'user-agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+    'auth' => $_SERVER['HTTP_AUTHORIZATION'] ?? '',
+];
+
+$json = json_encode($entry, JSON_PRETTY_PRINT);
+
+$path = $root . '/logs/' . time() . '_' . date('Y-m-d_H-m') . '.json';
+
+file_put_contents($path, $json);
 
 $request = (object)[
     'get' => (object)$_GET,
@@ -13,24 +24,19 @@ $request = (object)[
     'server' => (object)$_SERVER,
 ];
 
-$json = json_encode($request, JSON_PRETTY_PRINT);
-
-$path = $root . '/logs/' . time() . '_' . date('Y-m-d_H-m') . '.json';
-
-file_put_contents($path, $json);
-
 $url = (object)parse_url($_SERVER['REQUEST_URI']);
 
 $path = $url->path;
 
-if ($path === '/rest/ping.view')
-{
-    $action = new Ping();
-    return $action->run($request);
-}
+$map = [
+    '/rest/ping.view' => 'Ping',
+    '/rest/getAlbumList2.view' => 'GetAlbumList2',
+    '/rest/getLicense.view' => 'GetLicense',
+];
 
-if ($path === '/rest/getLicense.view')
+if (isset($map[$path]) === true)
 {
-    $action = new GetLicense();
+    $class = 'GammaLibrae\Actions\\' . $map[$path];
+    $action = new $class();
     return $action->run($request);
 }
