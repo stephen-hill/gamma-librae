@@ -2,6 +2,8 @@
 
 $root = dirname(__DIR__);
 
+$config = require($root . '/config/config.php');
+
 require_once($root . '/vendor/autoload.php');
 
 $entry = (object)[
