@@ -1,5 +1,7 @@
 <?php
 
+use Michelf\Markdown;
+
 $root = dirname(__DIR__);
 
 $config = require($root . '/config/config.php');
@@ -42,3 +44,7 @@ if (isset($map[$path]) === true)
     $action = new $class();
     return $action->run($request);
 }
+
+$markdown = file_get_contents($root . '/README.md');
+$html = Markdown::defaultTransform($markdown);
+echo $html;
