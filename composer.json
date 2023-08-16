@@ -3,5 +3,8 @@
         "psr-4": {
             "GammaLibrae\\": "src/"
         }
+    },
+    "require": {
+        "michelf/php-markdown": "^2.0"
     }
 }
